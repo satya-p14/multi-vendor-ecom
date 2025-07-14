@@ -4,19 +4,20 @@ interface CategoriesProps {
     data: any;
 }
 
-export const Categories = ({ data }: CategoriesProps) => {
-    console.log({data}, "category");
+export const Categories = ({ data }: CategoriesProps) => {    
     return (
-        <div>
-            {data.map((category) => (
-                <div key={category.id}>
-                    <CategoryDropDown
-                        category={category}
-                        isActive={false}
-                        isNavigationHovered={false}
-                    />
-                </div>
-            ))}
+        <div className="relative w-full ">
+            <div className="flex flex-nowrap">
+                {data.map((category) => (
+                    <div key={category.id}>
+                        <CategoryDropDown
+                            category={category}
+                            isActive={false}
+                            isNavigationHovered={false}
+                        />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
