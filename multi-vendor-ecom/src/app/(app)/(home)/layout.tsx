@@ -21,7 +21,8 @@ const Layout = async ({ children }: Props) => {
             parent: {
                 exists: false
             }
-        }
+        },
+        sort:"name"
     });   
 
     return (
