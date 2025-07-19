@@ -1,15 +1,14 @@
 "use client";
-
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRef, useState } from 'react';
 import { useDropdownPosition } from './use-drodown-position';
 import { SubCategoryMenu } from './sub-category-menu';
-import { CustomCategory } from '../types';
 import Link from 'next/link';
+import { CategoriesGetManyOutput } from '@/modules/categories/types';
 
 interface CategoryDDProps {
-    category: CustomCategory;
+    category: CategoriesGetManyOutput[1];
     isActive?: boolean;
     isNavigationHovered?: boolean;
 }
@@ -17,7 +16,7 @@ interface CategoryDDProps {
 export const CategoryDropDown = ({ category, isActive, isNavigationHovered }: CategoryDDProps) => {
 
     const [isOpen, isSetOpen] = useState(false);
-    const dropDownRef = useRef<HTMLDivElement>(null);
+    const dropDownRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;;
     const { getDropdownPosition } = useDropdownPosition(dropDownRef);
 
     const onMouseEnter = () => {
