@@ -1,14 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "lucide-react";
-import { CustomCategory } from "../types";
-
 
 interface SearchInputProps {
-    disabled?: boolean;
-    data: CustomCategory[];
+    disabled?: boolean;   
 }
 
-export const SearchInput = ({ disabled, data }: SearchInputProps) => {
+export const SearchInput = ({ disabled }: SearchInputProps) => {
     //  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     return (
         <div className="flex items-center gap-2 w-full">

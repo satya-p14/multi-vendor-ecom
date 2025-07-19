@@ -1,21 +1,22 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
-import { CustomCategory } from "../types";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { useTRPC } from "@/trpc/client";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
 
 interface CategorySidebarProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    data: CustomCategory[]; // remove later if not needed
 }
 
-export const CategoriesSidebar = ({ open, onOpenChange, data }: CategorySidebarProps) => {
-    const [parentCategory, setParentCategory] = useState<CustomCategory[] | null>(null);
-    const [activeCategory, setActiveCategory] = useState<CustomCategory | null>(null);
-    // if we have 
+export const CategoriesSidebar = ({ open, onOpenChange }: CategorySidebarProps) => {
+    const trpc = useTRPC();
+    const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
+    const [parentCategory, setParentCategory] = useState<CategoriesGetManyOutput[] | null>(null);
+    const [activeCategory, setActiveCategory] = useState<CategoriesGetManyOutput[1] | null>(null);
     const currentCategory = parentCategory ?? data ?? [];
     const router = useRouter();
     const backgroundColor = activeCategory ? activeCategory.color : "whitesmoke";

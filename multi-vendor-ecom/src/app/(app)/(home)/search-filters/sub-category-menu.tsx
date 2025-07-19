@@ -1,9 +1,15 @@
-import { Category } from '@/payload-types';
+// import { Category } from '@/payload-types';
+// Define Category type locally if not exported from '@/payload-types'
+type Category = {
+    slug: string;
+    name: string;
+    // Add other properties if needed
+};
 import Link from 'next/link';
-import { CustomCategory } from '../types';
+import { CategoriesGetManyOutput } from '@/modules/categories/types';
 
 interface SubCategoryMenuProps {
-    category: CustomCategory;
+    category: CategoriesGetManyOutput[1];
     isOpen: boolean;
     position: { top: number, left: number; };
 }
@@ -26,8 +32,7 @@ export const SubCategoryMenu = ({
              bg-amber-50' style={{ borderRadius: "10px " }}>
                 <div>
                     {category.subcategories?.map((subCat: Category) => (
-                        <Link key={subCat.slug} 
-                            href={`/${category.slug}/${subCat.slug}`}
+                        <Link key={subCat.slug} href='/'
                             className='w-full text-left p-4 border-b-2 border-black hover:bg-gray-300  hover:text-black hover:border-r-6 hover:border-green-600 hover:underline flex justify-between  items-center font-medium'
                             style={{ borderRadius: "10px " }}>
                             {subCat.name}
