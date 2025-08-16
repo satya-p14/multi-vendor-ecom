@@ -1,10 +1,9 @@
 import { HydrateClient, prefetch, trpc } from '@/trpc/server';
-import Footer from "./footer";
-import Navbar from "./Navbar";
-import SearchFilterLoading, { SearchFilter } from "./search-filters";
+import Navbar from '@/modules/home/ui/components/Navbar';
+import Footer from '@/modules/home/ui/components/footer';
+import SearchFilterLoading, { SearchFilter } from "@/modules/home/ui/components/search-filters";
 import { Suspense } from 'react';
 import { useTRPC } from '@/trpc/client';
-
 
 interface Props {
     children: React.ReactNode;
