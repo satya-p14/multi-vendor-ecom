@@ -1,8 +1,8 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { headers as getHeaders, cookies as getCookies } from "next/headers";
-import { AUTH_COOKIE } from "../constants";
+import { headers as getHeaders} from "next/headers";
 import { SignInSchema, SignUpSchema } from "../schemas";
+import { generateAuthCookie } from "../utils";
 
 export const AuthRouter = createTRPCRouter({
     session: baseProcedure.query(async ({ ctx }) => {
@@ -11,7 +11,7 @@ export const AuthRouter = createTRPCRouter({
         return session;
     }),
     login: baseProcedure
-        .input(SignInSchema)        
+        .input(SignInSchema)
         .mutation(async ({ input, ctx }) => {
             const existingData = await ctx.db.find({
                 collection: "users",
@@ -43,16 +43,12 @@ export const AuthRouter = createTRPCRouter({
                     message: "Failed to login"
                 });
             }
-            const cookies = await getCookies();
-            cookies.set({
-                name: AUTH_COOKIE,
-                value: data.token,
-                httpOnly: true,
-                path: "/",
-                // TODO : Ensure cross domain cookie sharing
-                // sameSite:"none",
-                // domain:""                
+            // Set the auth cookie
+            await generateAuthCookie({
+                prefix: ctx.db.config.cookiePrefix,
+                value: data.token
             });
+
             return data;
         }),
     register: baseProcedure
@@ -81,19 +77,10 @@ export const AuthRouter = createTRPCRouter({
                     message: "Failed to login"
                 });
             }
-            const cookies = await getCookies();
-            cookies.set({
-                name: AUTH_COOKIE,
-                value: data.token,
-                httpOnly: true,
-                path: "/",
-                // TODO : Ensure cross domain cookie sharing
-                // sameSite:"none",
-                // domain:""                
+            // Set the auth cookie
+            await generateAuthCookie({
+                prefix: ctx.db.config.cookiePrefix,
+                value: data.token
             });
-        }),
-    logout: baseProcedure.mutation(async () => {
-        const cookie = getCookies();
-        (await cookie).delete(AUTH_COOKIE);
-    })
+        })    
 });

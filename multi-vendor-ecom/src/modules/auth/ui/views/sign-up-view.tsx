@@ -4,7 +4,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpSchema } from "../../schemas";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import {toast} from "sonner";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { Poppins } from "next/font/google";
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 const poppins = Poppins({
@@ -23,11 +23,14 @@ const poppins = Poppins({
 const SignUpView = () => {
     const router = useRouter();
     const trpc = useTRPC();
+    const queryClient = useQueryClient();
     const registerVendor = useMutation(trpc.auth.register.mutationOptions({
         onError: (error) => {
             toast.error(error.message || "An error occurred while registering");
         },
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
+            //  await queryClient.invalidateQueries({ queryKey: ["auth", "session"] });
             toast.success("Registration successful! Redirecting to home page...");
             router.push("/");
         }
