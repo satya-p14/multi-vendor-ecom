@@ -27,7 +27,7 @@ export const SearchInput = ({ disabled }: SearchInputProps) => {
                 disabled={disabled}                >
                 <ListFilterIcon />
             </Button>
-            {session.data?.user && (
+            {/* {session.data?.user && (
                 <Button 
                 asChild
                 variant="elevated">
@@ -37,7 +37,7 @@ export const SearchInput = ({ disabled }: SearchInputProps) => {
                     </Link>
                 </Button>
 
-            )}
+            )} */}
         </div>
     );
 };

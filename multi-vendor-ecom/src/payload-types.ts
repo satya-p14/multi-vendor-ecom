@@ -6,6 +6,14 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+export type Category = {
+  slug: string;
+  subcategories?: {
+    docs?: Category[];
+  };
+  [key: string]: any;
+};
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
@@ -49,7 +57,7 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
-  username:string;
+  username: string;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -92,14 +100,14 @@ export interface PayloadPreference {
   };
   key?: string | null;
   value?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  | {
+    [k: string]: unknown;
+  }
+  | unknown[]
+  | string
+  | number
+  | boolean
+  | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -111,6 +119,7 @@ export interface PayloadMigration {
   id: string;
   name?: string | null;
   batch?: number | null;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -124,5 +133,5 @@ export interface Auth {
 
 
 declare module 'payload' {
-  export interface GeneratedTypes extends Config {}
+  export interface GeneratedTypes extends Config { }
 }
