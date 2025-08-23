@@ -2,14 +2,29 @@ import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { CollectionSlug, Where } from "payload";
 import { z } from "zod";
 import type { Category } from "@/payload-types";
+import { min } from "date-fns";
 
 export const ProductsRouter = createTRPCRouter({
     getMany: baseProcedure
         .input(z.object({
             category: z.string().nullable().optional(),
+            minPrice: z.number().nullable().optional(),
+            maxPrice: z.number().nullable().optional(),
+            minDate: z.date().nullable().optional(),
+            maxDate: z.date().nullable().optional(), 
         }))
         .query(async ({ ctx, input }) => {
             const where: Where = {};
+            if(input.minPrice !== undefined && input.minPrice !== null) {
+                where.price = {
+                    greater_than_equal: input.minPrice
+                }            
+            }
+            if(input.maxPrice !== undefined && input.minPrice !== null) {
+                where.price = {
+                    less_than_equal: input.maxPrice
+                }            
+            }
             if (input.category) {
                 const categoryData = await ctx.db.find({
                     collection: "categories" as CollectionSlug,
