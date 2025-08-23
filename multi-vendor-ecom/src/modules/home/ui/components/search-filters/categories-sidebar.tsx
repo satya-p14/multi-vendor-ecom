@@ -15,11 +15,11 @@ interface CategorySidebarProps {
 export const CategoriesSidebar = ({ open, onOpenChange }: CategorySidebarProps) => {
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
-    const [parentCategory, setParentCategory] = useState<CategoriesGetManyOutput[] | null>(null);
-    const [activeCategory, setActiveCategory] = useState<CategoriesGetManyOutput[1] | null>(null);
-    const currentCategory = parentCategory ?? data ?? [];
+    const [parentCategory, setParentCategory] = useState<CategoriesGetManyOutput[0] | null>(null);
+    const [activeCategory, setActiveCategory] = useState<(CategoriesGetManyOutput[0] & { color?: string; }) | null>(null);
+    const currentCategory = parentCategory ? parentCategory.subcategories : data ?? [];
     const router = useRouter();
-    const backgroundColor = activeCategory ? activeCategory.color : "whitesmoke";
+    const backgroundColor = activeCategory && activeCategory.color ? activeCategory.color : "whitesmoke";
     const handleBackClick = () => {
         if (parentCategory) {
             setParentCategory(null);
@@ -48,9 +48,16 @@ export const CategoriesSidebar = ({ open, onOpenChange }: CategorySidebarProps) 
                         <button
                             key={category.slug}
                             onClick={() => {
-                                if (category.subcategories && category.subcategories.length > 0) {
-                                    setParentCategory(category.subcategories);
-                                    setActiveCategory(category);
+                                if (
+                                    category.subcategories &&
+                                    (
+                                        Array.isArray(category.subcategories)
+                                            ? category.subcategories.length > 0
+                                            : category.subcategories.docs && category.subcategories.docs.length > 0
+                                    )
+                                ) {
+                                    setParentCategory(category as CategoriesGetManyOutput[0]);
+                                    setActiveCategory(category as CategoriesGetManyOutput[0] & { color?: string; });
                                 } else {
                                     if (parentCategory && activeCategory) {
                                         router.push(`/${activeCategory.slug}/${category.slug}`);
@@ -61,16 +68,22 @@ export const CategoriesSidebar = ({ open, onOpenChange }: CategorySidebarProps) 
                                             router.push('/');
                                         }
                                     }
-                                    setActiveCategory(category);
+                                    setActiveCategory(category as CategoriesGetManyOutput[0] & { color?: string; });
                                     onOpenChange(false);
                                 }
                             }}
                             className="w-full text-left p-4 hover:bg-black hover:text-white flex justify-between items-center text-base font-medium"
                         >
-                            {category.name}
-                            {category.subcategories && category.subcategories.length > 0 && (
-                                <ChevronRightIcon className="w-4" />
-                            )}
+                            {"name" in category && category.name ? category.name : category.slug}
+                            {(category.subcategories &&
+                                (
+                                    Array.isArray(category.subcategories)
+                                        ? category.subcategories.length > 0
+                                        : category.subcategories.docs && category.subcategories.docs.length > 0
+                                )
+                            ) && (
+                                    <ChevronRightIcon className="w-4" />
+                                )}
 
                         </button>
                     ))};
