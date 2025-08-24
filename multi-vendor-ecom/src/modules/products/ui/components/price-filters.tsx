@@ -64,7 +64,7 @@ export const PriceFilters = ({
                     id="max-price"
                     type="text"
                     placeholder="∞"
-                    value={minPrice ? formatAsCurrency(minPrice) : ''}
+                    value={maxPrice ? formatAsCurrency(maxPrice) : ''}
                     onChange={handleMaxPriceChange}
                 />
             </div>
