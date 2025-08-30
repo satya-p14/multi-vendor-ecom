@@ -1,13 +1,16 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
- import { sortValues } from "../search-params";
+import { sortValues } from "../search-params";
 import { CollectionSlug, Sort, Where } from "payload";
 import { z } from "zod";
-import type { Category } from "@/payload-types";
+import type { Category, Media } from "@/payload-types";
+import { DEFAULT_LIMIT } from "@/constants";
 ``;
 
 export const ProductsRouter = createTRPCRouter({
     getMany: baseProcedure
         .input(z.object({
+            cursor: z.number().default(1),
+            limit:z.number().default(DEFAULT_LIMIT),
             category: z.string().nullable().optional(),
             minPrice: z.number().nullable().optional(),
             maxPrice: z.number().nullable().optional(),
@@ -19,15 +22,15 @@ export const ProductsRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const where: Where = {};
             let sort: Sort = "-createdAt";
-            
+
             if (input.sort === "newest") {
                 sort = "-createdAt";
             }
-            
+
             if (input.sort === "oldest") {
                 sort = "+CreatedAt";
             }
-            
+
             if (input.sort === "default") {
                 sort = "name";
             }
@@ -90,13 +93,21 @@ export const ProductsRouter = createTRPCRouter({
                 const data = await ctx.db.find({
                     collection: "products" as CollectionSlug,
                     depth: 1, //  populate categories and images                    
-                    where,                    
-                    sort
+                    where,
+                    sort,
+                    page:input.cursor,
+                    limit:input.limit
                 });
 
                 await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate delay
-                console.log(data , "=====");
-                return data;
+                console.log(data, "=====");
+                return {
+                    ...data,
+                    docs: data.docs.map((doc: any) => ({
+                        ...doc,
+                        image: doc.image as Media | null
+                    }))
+                };
             }
         })
 });
