@@ -1,8 +1,9 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { headers as getHeaders} from "next/headers";
+import { headers as getHeaders } from "next/headers";
 import { SignInSchema, SignUpSchema } from "../schemas";
 import { generateAuthCookie } from "../utils";
+import { te } from "date-fns/locale";
 
 export const AuthRouter = createTRPCRouter({
     session: baseProcedure.query(async ({ ctx }) => {
@@ -54,13 +55,44 @@ export const AuthRouter = createTRPCRouter({
     register: baseProcedure
         .input(SignUpSchema)
         .mutation(async ({ input, ctx }) => {
+            const existingData = await ctx.db.find({
+                collection: "users",
+                limit: 1,
+                where: {
+                    username: {
+                        equals: input.email
+                    }
+                }
+            });
+
+            const existingUser = existingData.docs[0];
+            if (existingUser) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "User already exists with this email"
+                });
+            };
+
+            const tenant = await ctx.db.create({
+                collection: "tenants",
+                data: {
+                    name: input.username,
+                    slug: input.username,
+                    stripeAccountId: "sanvi",
+                }
+            });
+
             await ctx.db.create({
                 collection: "users",
                 data: {
                     email: input.email,
                     username: input.username,
                     password: input.password, // this will be hashed
-
+                    tenants: [
+                        {
+                            tenant: tenant.id
+                        },
+                    ],
                 }
             });
             // login after registration            
@@ -82,5 +114,5 @@ export const AuthRouter = createTRPCRouter({
                 prefix: ctx.db.config.cookiePrefix,
                 value: data.token
             });
-        })    
+        })
 });
