@@ -21,6 +21,10 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    products: any;
+    categories: any;
+    tags: any;
+    tenants: any;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -68,6 +72,7 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
+  tenants: any[];  
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

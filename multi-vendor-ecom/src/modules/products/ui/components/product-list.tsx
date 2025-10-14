@@ -12,6 +12,17 @@ interface ProductListProps {
     category?: string;
 }
 
+interface ProductCardProps {
+    id: string;
+    name: string;
+    imageUrl?: string | null;
+    authorUsername: string;
+    authorImageUrl?: string | null;
+    reviewRating: number;
+    reviewCount: number;
+    price: number;
+}
+
 export const ProductList = ({ category }: ProductListProps) => {
     // This component will render a list of products
     const [filters] = useProductFilters();
@@ -42,22 +53,30 @@ export const ProductList = ({ category }: ProductListProps) => {
             </div>
         );
     }
+    if (data?.pages.length === 0) {
+        return (
+            <div className="border border-black border-dashed flex items-center justify-center p-8 flex-col gap-y-4 g-bg-white w-full rounded-lg">
+                <InboxIcon />
+                <p className="text-base font-medium">No product found</p>
+            </div>
+        );
+    }
     return (
         <>
             <div className="grid grid-cols-1 sm:grid-cols-2
          md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-                {/* {JSON.stringify(data , null , 2)} */}
-                {(data?.pages.flatMap((page) => page?.docs) as Array<{ image: Media; id: string; name: string; description?: string; price: number; }>).map((product) => (
+                {/* {JSON.stringify(data , null , 2)} */}                
+                {(data?.pages?.flatMap((page) => page?.docs) as Array<ProductCardProps>).map((product) => (                    
                     <ProductCard
-                        key={product.id}
-                        id={product.id}
-                        name={product.name}
-                        imageUrl={product?.image?.url}
+                        key={Math.random().toString(36).substring(2, 9)}  
+                        id={Math.random().toString(36).substring(2, 9)}                      
+                        name={product?.name}
+                        imageUrl={product?.imageUrl}
                         authorUsername="Satya"
                         authorImageUrl={undefined}
                         reviewRating={3}
                         reviewCount={5}
-                        price={product.price}
+                        price={product?.price}
                     />
 
                     // <div key={product.id} className="border rounded-md bg-white p-4 flex flex-col">

@@ -99,8 +99,7 @@ export const ProductsRouter = createTRPCRouter({
                     limit:input.limit
                 });
 
-                await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate delay
-                console.log(data, "=====");
+                await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate delay                
                 return {
                     ...data,
                     docs: data.docs.map((doc: any) => ({

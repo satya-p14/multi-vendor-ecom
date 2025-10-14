@@ -1,4 +1,4 @@
-import { getPayload } from "payload";
+import { CollectionSlug, getPayload } from "payload";
 import config from '@payload-config';
 
 const categories = [
@@ -135,6 +135,33 @@ const categories = [
 
 const seed = async () => {
     const payload = await getPayload({ config });
+
+    // create admin tenant
+    const adminTenant = await payload.create({
+        collection: "tenants",
+        data: { 
+            name: "Admin Tenant",
+            slug: "admin-tenant",
+            stripeAccountId: "admin-stripe-account-id",
+            
+        }
+    });
+
+    // create admin users
+    await payload.create({
+        collection: "users",
+        data: {
+            email: "admin@demo.com",
+            password: "demo",
+            roles: ["super-admin"],
+            username: "admin",
+            tenants:[
+                {
+                    tenant: adminTenant.id // Replace with actual tenant ID or fetch dynamically
+                }
+            ]
+        }
+    });
     for (const element of categories) {
         const parentCat = await payload.create({
             collection: "categories",
